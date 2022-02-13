@@ -1,18 +1,9 @@
 import { CircularProgress, Box } from "@mui/material";
+import spinnerStyle from "./styles/spinner";
 
 const Spinner = () => {
   return (
-    <Box
-      style={{
-        width: "200px",
-        margin: "auto",
-        display: "block",
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -30%)",
-      }}
-    >
+    <Box sx={spinnerStyle}>
       <CircularProgress />
     </Box>
   );
