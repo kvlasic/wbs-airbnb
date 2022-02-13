@@ -6,6 +6,7 @@ import Spinner from "./Spinner";
 
 const SpacesList = () => {
   const [spaces, setSpaces] = useState([]);
+
   useEffect(() => {
     const requestSpaces = async () => {
       const res = await fetch(
