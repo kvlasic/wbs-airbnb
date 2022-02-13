@@ -1,10 +1,5 @@
-import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
-import LocalParkingIcon from "@mui/icons-material/LocalParking";
-import PersonIcon from "@mui/icons-material/Person";
-import SignalWifiOffIcon from "@mui/icons-material/SignalWifiOff";
-import WifiIcon from "@mui/icons-material/Wifi";
 import {
   Avatar,
   Box,
@@ -20,8 +15,16 @@ import CardMedia from "@mui/material/CardMedia";
 import { green, red } from "@mui/material/colors";
 import Grid from "@mui/material/Grid";
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
-import innerCardStyle from "./styles/innerCard";
+import { Fragment, useState } from "react";
+import { defaultStyle, gridFontStyle, spaceGrid } from "./data/spaceGrid";
+import {
+  descriptionContainerStyle,
+  expandedCardStyle,
+  innerCardStyle,
+  innerTitleStyle,
+  descriptionFontStyle,
+  contentStyle,
+} from "./styles/innerCard";
 import modalStyle from "./styles/modal";
 
 const SpaceCard = ({ space }) => {
@@ -32,19 +35,8 @@ const SpaceCard = ({ space }) => {
   const handleMouseOver = () => setElevation(16);
   const handleMouseOut = () => setElevation(2);
 
-  const {
-    title,
-    address,
-    currently_available,
-    description,
-    maximum_guests,
-    minimum_nights,
-    parking,
-    price_per_night,
-    rooms,
-    wifi,
-    image_src,
-  } = space.attributes;
+  const { title, address, currently_available, description, image_src } =
+    space.attributes;
 
   const avatarColor = currently_available ? green[300] : red[300];
 
@@ -83,21 +75,11 @@ const SpaceCard = ({ space }) => {
       </Grid>
       <Modal onClose={toggleExpand} open={expanded}>
         <Box sx={modalStyle}>
-          <Card
-            sx={{
-              height: "100%",
-              borderRadius: 10,
-            }}
-          >
+          <Card sx={expandedCardStyle}>
             <CardHeader
               sx={{ height: "12%" }}
               title={
-                <Typography
-                  component={"h2"}
-                  variant={"h4"}
-                  fontFamily={"Pacifico"}
-                  textAlign={"center"}
-                >
+                <Typography component="h2" variant="h4" sx={innerTitleStyle}>
                   {title}
                 </Typography>
               }
@@ -108,106 +90,38 @@ const SpaceCard = ({ space }) => {
               }
             />
             <CardContent
+              style={contentStyle}
               sx={{
                 backgroundImage: `linear-gradient(rgba(255,255,255,0.75), rgba(255,255,255,0.75)), url(${image_src})`,
-                height: "78%",
-                backgroundSize: "cover",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
               }}
             >
-              <Box sx={{ width: "60%", maxHeight: "77%", overflow: "auto" }}>
-                <Typography
-                  fontWeight={500}
-                  fontSize={22}
-                  fontFamily={"Sansita Swashed"}
-                  lineHeight={2.2}
-                >
-                  {description}
-                </Typography>
+              <Box sx={descriptionContainerStyle}>
+                <Typography sx={descriptionFontStyle}>{description}</Typography>
               </Box>
               <Card sx={innerCardStyle}>
                 <Grid spacing={4} container>
-                  <Grid
-                    item
-                    xs={6}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      placeContent: "center",
-                    }}
-                  >
-                    <Typography
-                      fontWeight={500}
-                      fontSize={22}
-                      fontFamily={"Sansita Swashed"}
+                  {spaceGrid.map((gridItem) => (
+                    <Grid
+                      item
+                      xs={6}
+                      sx={gridItem.style ? gridItem.style : defaultStyle}
+                      key={gridItem.name}
                     >
-                      {maximum_guests}
-                    </Typography>{" "}
-                    <PersonIcon />
-                  </Grid>
-                  <Grid
-                    item
-                    sx={{ placeContent: "center", display: "flex" }}
-                    xs={6}
-                  >
-                    <Typography
-                      fontWeight={500}
-                      fontSize={22}
-                      fontFamily={"Sansita Swashed"}
-                    >
-                      {minimum_nights} night{minimum_nights === 1 ? "" : "s"}
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    sx={{ placeContent: "center", display: "flex" }}
-                    xs={6}
-                  >
-                    <Typography
-                      fontWeight={500}
-                      fontSize={22}
-                      fontFamily={"Sansita Swashed"}
-                    >
-                      {price_per_night}€/night
-                    </Typography>{" "}
-                  </Grid>
-                  <Grid
-                    item
-                    sx={{ placeContent: "center", display: "flex" }}
-                    xs={6}
-                  >
-                    <Typography
-                      fontWeight={500}
-                      fontSize={22}
-                      fontFamily={"Sansita Swashed"}
-                    >
-                      {rooms} room{rooms === 1 ? "" : "s"}
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    sx={{ placeContent: "center", display: "flex" }}
-                    xs={6}
-                  >
-                    {wifi ? (
-                      <WifiIcon color="success" />
-                    ) : (
-                      <SignalWifiOffIcon color="disabled" />
-                    )}
-                  </Grid>
-                  <Grid
-                    sx={{ placeContent: "center", display: "flex" }}
-                    item
-                    xs={6}
-                  >
-                    {parking ? (
-                      <LocalParkingIcon color="success" />
-                    ) : (
-                      <DoNotDisturbIcon color="disabled" />
-                    )}
-                  </Grid>
+                      {gridItem.typography && (
+                        <Typography sx={gridFontStyle}>
+                          {space.attributes[gridItem.name]}
+                          {gridItem.typography.value}
+                          {gridItem.typography.possiblePlural &&
+                            (space.attributes[gridItem.name] === 1 ? "" : "s")}
+                        </Typography>
+                      )}
+                      {gridItem.icon}
+                      {gridItem.condition &&
+                        (space.attributes[gridItem.name]
+                          ? gridItem.condition.true
+                          : gridItem.condition.false)}
+                    </Grid>
+                  ))}
                 </Grid>
               </Card>
             </CardContent>
